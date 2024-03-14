@@ -42,7 +42,7 @@ var chunkManager;
     Chunk.shaderProgram = program;
     Chunk.textureLocation = textureLocation;
 
-    var cManager = new ChunkManager(gl,10,64,3);
+    var cManager = new ChunkManager(gl,12,64,3);
     chunkManager = cManager;
     // -- Init Texture
 

@@ -210,8 +210,8 @@ class Chunk{
         }
         if(!this.generating && !this.generated && this.generatedBlocks){
             this.generating = true;
-            if(r < 5) Chunk.Manager.StackChunkEvent('GenerateModel',this);
-            else Chunk.Manager.StackChunkEvent('GenerateLOD1Model',this);
+            //if(r < 5) Chunk.Manager.StackChunkEvent('GenerateLOD1Model',this);
+            Chunk.Manager.StackChunkEvent('GenerateModel',this);
         }
         if(!this.generated || !this.generatedBlocks) return 0;
         var n = 0;

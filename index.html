@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/PlayerController.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="third-party/gl-matrix-min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+        }
+
+        p#data {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="display"></canvas>
+    <p id="data">
+        FPS: <label id="fps">0</label>
+        CORDS: <label id="cords">0 0 0</label>
+        LOOK: <label id="direction">0 0 0</label>
+        VERT: <label id="verticies">0</label>
+    </p>
+    <!-- WebGL 2 shaders -->
+    <script id="vs" type="x-shader/x-vertex">
+        #version 300 es
+
+        // Uniforms
+        uniform mat4 projectionMatrix;
+        uniform mat4 viewMatrix;
+        uniform mat4 modelMatrix;
+        uniform vec3 lightDirection;
+
+        // Attributes
+        in vec3 position;
+        in vec2 uv;
+        in vec3 normal;
+
+        // Varying variables
+        out vec2 fragUV;
+        out vec3 fragNormal;
+        out vec3 fragLightDir;
+
+        void main() {
+            // Transform the vertex position
+            gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+            
+            // Pass the texture coordinates to the fragment shader
+            fragUV = uv;
+
+            // Pass the normal and view direction to the fragment shader
+            fragNormal = normalize(mat3(transpose(inverse(modelMatrix))) * normal);
+            fragLightDir = normalize(vec3(projectionMatrix * vec4(lightDirection, 0.0)));
+        }
+    </script>
+    <script id="fs" type="x-shader/x-fragment">
+        #version 300 es
+        precision highp float;
+
+        // Uniforms
+        uniform sampler2D textureSampler;
+        uniform sampler2D colorMapSampler;
+        uniform vec3 lightDirection;
+        uniform vec3 ambientColor;
+
+        uniform bool isLine;
+
+        // Varying variables
+        in vec2 fragUV;
+        in vec3 fragNormal;
+        in vec3 fragLightDir;
+
+        // Output color
+        out vec4 fragColor;
+
+        void main() {
+            if(isLine){
+
+            }else{
+                // Sample the texture using the given texture coordinates
+                vec4 texColor = texture(textureSampler, fragUV);
+                vec3 color;
+    
+                if(texColor.r == texColor.g && texColor.g == texColor.b){
+                    float grayscale = texColor.r;
+                    //https://minecraft.fandom.com/wiki/Grass_Block#Color
+                    color = grayscale * vec3(texture(colorMapSampler,vec2(0.2,0.4)));
+                }else{
+                    color = vec3(texColor);
+                }
+    
+                //color = vec3(texture(colorMapSampler,vec2(0.2,0.4)));
+    
+                // Calculate the diffuse lighting
+                vec3 normal = normalize(fragNormal);
+                vec3 lightDir = normalize(fragLightDir);
+                float diffuse = max(dot(normal, lightDir), 0.1);
+                // Calculate the ambient lighting
+                vec3 ambient = ambientColor * color.rgb;
+                
+                vec3 finalColor = ambient + color.rgb * diffuse;
+                // Output the final fragment color with alpha from the texture
+                fragColor = vec4(finalColor, texColor.a);
+            }
+        }
+    </script>
+    <script id="fs-l" type="x-shader/x-fragment">
+        #version 300 es
+        precision highp float;
+
+        // Uniforms
+        uniform sampler2D textureSampler;
+        uniform sampler2D colorMapSampler;
+        uniform vec3 lightDirection;
+        uniform vec3 ambientColor;
+
+        // Varying variables
+        in vec2 fragUV;
+        in vec3 fragNormal;
+        in vec3 fragLightDir;
+
+        // Output color
+        out vec4 fragColor;
+
+        void main() {
+            fragColor = vec4(1.0,1.0,1.0,1.0);
+        }
+    </script>
+    <script src="utility.js"></script>
+    <script src="HalfFloatUtility.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

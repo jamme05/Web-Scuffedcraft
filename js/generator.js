@@ -1228,26 +1228,6 @@ class ChunkManager{
                 /**/
                 break;
         }
-        /* Timed dynamic printer method square (left to right, top to bottom, radius gradually increases) good performance
-        // Reset timer if generating too many new chunks?
-        for(let x = -tr; x <= tr; ++x){
-            for(let y = -tr; y <= tr; ++y){
-                if(tr < r && !this.growing){
-                    this.growing = true;
-                    setTimeout(()=>{
-                        this.growing = false;
-                        ++this.tempRadius;
-                    },this.tempIncreaseInterval * tr);
-                }
-                let chunk = this.GetChunk(pRoundedX+x,pRoundedY+y);
-                
-                chunk.active = true;
-                chunk.lifetime = Chunk.lifetime;
-                chunk.gl.uniform1i(Chunk.textureLocation, 0);
-                n+=chunk.Render(direction,tr);
-            }
-        }
-        /**/
 
         //*
         this.ChunkArray.sort((a,b)=>a.lifetime - b.lifetime);
